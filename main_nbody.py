@@ -43,8 +43,6 @@ parser.add_argument('--max_training_samples', type=int, default=3000, metavar='N
                     help='maximum amount of training samples')
 parser.add_argument('--dataset', type=str, default="nbody_small", metavar='N',
                     help='nbody_small, nbody')
-parser.add_argument('--sweep_training', type=int, default=0, metavar='N',
-                    help='0 nor sweep, 1 sweep, 2 sweep small')
 parser.add_argument('--time_exp', type=int, default=0, metavar='N',
                     help='timing experiment')
 parser.add_argument('--weight_decay', type=float, default=1e-12, metavar='N',
@@ -207,45 +205,8 @@ def train(model, optimizer, epoch, loader, backprop=True,state = True):
     print("[Distance] loss x:%.6f loss y:%.6f loss z:%.6f"% (loss_mse(loc_pred[:,0], loc_end[:,0]),loss_mse(loc_pred[:,1], loc_end[:,1]),loss_mse(loc_pred[:,2], loc_end[:,2])))
     return res['loss'] / res['counter']
 
-
-def main_sweep():
-    training_samples = [100, 200, 400, 800, 1600, 3200, 6400, 12800, 25000, 50000]
-    n_epochs = [2000, 2000, 4000, 5000, 8000, 10000, 8000, 6000, 4000, 2000]
-    if args.model == 'egnn_vel':
-        n_epochs = [4000, 4000, 2000, 2000, 2000, 1500, 1500, 1500, 1000, 1000] # up to the 5th updated
-    elif args.model == 'kholer_vel':
-        n_epochs = [8000, 6000, 6000, 6000, 6000, 6000, 6000, 6000, 4000, 2000] # up to the 5th
-
-    if args.sweep_training == 2:
-        training_samples = training_samples[0:5]
-        n_epochs = n_epochs[0:5]
-    elif args.sweep_training == 3:
-        training_samples = training_samples[6:]
-        n_epochs = n_epochs[6:]
-    elif args.sweep_training == 4:
-        training_samples = training_samples[8:]
-        n_epochs = n_epochs[8:]
-
-
-    results = {'tr_samples': [], 'test_loss': [], 'best_epochs': []}
-    for epochs, tr_samples in zip(n_epochs, training_samples):
-        args.epochs = epochs
-        args.max_training_samples = tr_samples
-        args.test_interval = max(int(10000/tr_samples), 1)
-        best_val_loss, best_test_loss, best_epoch = main()
-        results['tr_samples'].append(tr_samples)
-        results['best_epochs'].append(best_epoch)
-        results['test_loss'].append(best_test_loss)
-        print("\n####### Results #######")
-        print(results)
-        print("Results for %d epochs and %d # training samples \n" % (epochs, tr_samples))
-
-
 if __name__ == "__main__":
-    if args.sweep_training:
-        main_sweep()
-    else:
-        main()
+    main()
 
 
 
