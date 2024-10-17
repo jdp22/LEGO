@@ -102,7 +102,7 @@ def get_velocity_attr(loc, vel, rows, cols):
 def main():
     dataset_train = NBodyDataset(args,partition='train', dataset_name=args.dataset,
                                     max_samples=args.max_training_samples,node_number = args.node_number)
-    loader_train = torch.utils.data.DataLoader(dataset_train, batch_size=args.batch_size, shuffle=True, drop_last=True)
+    loader_train = torch.utils.data.DataLoader(dataset_train, batch_size=args.batch_size, shuffle=False, drop_last=True)
 
     dataset_val = NBodyDataset(args,partition='val', dataset_name="nbody_small",max_samples=2000,node_number = args.node_number)
     loader_val = torch.utils.data.DataLoader(dataset_val, batch_size=args.batch_size, shuffle=False, drop_last=False)
